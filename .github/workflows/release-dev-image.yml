@@ -36,7 +36,8 @@ jobs:
       - name: Define Image Tag
         id: define-image-tag
         run: |
-          BRANCH_NAME="${GITHUB_REF#refs/heads/docker/}"
+          BRANCH_NAME="${{ github.head_ref }}"
+          BRANCH_NAME="${BRANCH_NAME#docker/}"
           echo "branch_name=$BRANCH_NAME" >> $GITHUB_ENV
           echo "tag_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
@@ -61,7 +62,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
           build-args: |
-            APP_VER=${{ steps.meta.outputs.tag_name }}
+            APP_VER=${{ steps.define-image-tag.outputs.tag_name }}
             RAILS_ENV=development
             NODE_ENV=development
 
