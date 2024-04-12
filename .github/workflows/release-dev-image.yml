@@ -25,6 +25,7 @@ jobs:
       matrix:
         platform:
           - linux/amd64
+          - linux/arm64
     timeout-minutes: 300
 
     steps:
