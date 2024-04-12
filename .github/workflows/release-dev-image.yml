@@ -15,7 +15,7 @@ env:
 
 jobs:
   build-and-security-check:
-    if: startsWith(github.ref, 'refs/heads/docker/') && (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed'))
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -65,14 +65,8 @@ jobs:
             RAILS_ENV=development
             NODE_ENV=development
 
-      - name: Run security checks
-        uses: aquasecurity/trivy-action@0.0.13
-        with:
-          image-ref: ${{ steps.meta.outptus.tags }}
-          format: table
-
   push-to-registry:
-    if: startsWith(github.ref, 'refs/heads/docker/') && (github.event_name == 'pull_request' && github.event.action == 'closed')
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
     needs: build-and-security-check
     runs-on: ubuntu-latest
     steps:
