@@ -1,5 +1,5 @@
 ---
-name: Release Docker image to AWS ECR
+name: Release Development Image to Github Registry
 
 on:
   pull_request:
@@ -15,7 +15,7 @@ env:
 
 jobs:
   build-and-security-check:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    if: startsWith(github.ref, 'refs/heads/docker/') && (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed'))
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -46,7 +46,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: type=custom,value=${{ steps.define-image-tag.outputs.tag_name }}
+          tags: type=raw,value=${{ steps.define-image-tag.outputs.tag_name }}
 
       - name: Build Docker Image
         uses: docker/build-push-action@v5
@@ -72,7 +72,7 @@ jobs:
           format: table
 
   push-to-registry:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    if: startsWith(github.ref, 'refs/heads/docker/') && (github.event_name == 'pull_request' && github.event.action == 'closed')
     needs: build-and-security-check
     runs-on: ubuntu-latest
     steps:
