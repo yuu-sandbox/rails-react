@@ -64,7 +64,6 @@ jobs:
           target: development
           platforms: ${{ matrix.platform }}
           push: false
-          load: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -81,5 +80,9 @@ jobs:
           format: table
 
       - name: Push Docker image to GitHub Container Registry
-        run: |
-          docker push ${{ steps.meta.outputs.tags }}
+        uses: docker/build-push-action@v5
+        with:
+          platforms: ${{ matrix.platform }}
+          push: true
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
