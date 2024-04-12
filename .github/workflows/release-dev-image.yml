@@ -20,6 +20,12 @@ env:
 jobs:
   build-and-security-check:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
     timeout-minutes: 300
 
     steps:
@@ -56,7 +62,7 @@ jobs:
           context: .
           file: ./Dockerfile
           target: development
-          platforms: linux/amd64,linux/arm64
+          platforms: ${{ matrix.platform }}
           push: false
           load: true
           tags: ${{ steps.meta.outputs.tags }}
@@ -80,7 +86,7 @@ jobs:
           context: .
           file: ./Dockerfile
           target: development
-          platforms: linux/amd64,linux/arm64
+          platforms: ${{ matrix.platform }}
           push: true
           load: true
           tags: ${{ steps.meta.outputs.tags }}
