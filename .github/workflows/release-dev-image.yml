@@ -69,17 +69,14 @@ jobs:
       - name: Run security checks
         uses: aquasecurity/trivy-action@0.0.19
         with:
-          image-ref: ${{ steps.meta.outptus.tags }}
+          image-ref: ${{ steps.meta.outputs.tags }}
           format: table
 
       - name: Push Docker image to Github Container Registry
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./Dockerfile
-          target: development
-          push: false
-          tags: ${{ steps.meta.outptus.tags }}
-          labels: ${{ steps.meta.outptus.tags }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.tags }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
