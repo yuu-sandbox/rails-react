@@ -78,7 +78,7 @@ jobs:
           file: ./Dockerfile
           target: development
           push: false
-          tags: ${{ needs.build-and-security-check.outputs.tag_name }}
-          labels: ${{ needs.build-and-security-check.outputs.labels }}
+          tags: ${{ steps.meta.outptus.tags }}
+          labels: ${{ steps.meta.outptus.tags }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
