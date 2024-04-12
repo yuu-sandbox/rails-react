@@ -19,7 +19,6 @@ env:
 
 jobs:
   build-and-security-check:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -55,10 +54,31 @@ jobs:
           file: ./Dockerfile
           target: development
           platforms: ${{ matrix.platform }}
-          push: true
+          push: false
+          load: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
           build-args: |
             APP_VER=${{ steps.meta.outputs.tag_name }}
             RAILS_ENV=development
             NODE_ENV=development
+
+      - name: Run security checks
+        uses: aquasecurity/trivy-action@0.0.19
+        with:
+          image-ref: ${{ steps.meta.outptus.tags }}
+          format: table
+
+      - name: Push Docker image to Github Container Registry
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          target: development
+          push: false
+          tags: ${{ needs.build-and-security-check.outputs.tag_name }}
+          labels: ${{ needs.build-and-security-check.outputs.labels }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
