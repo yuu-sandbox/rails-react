@@ -41,9 +41,9 @@ RUN set -eux; \
    ; \
    rm -rf /var/lib/apt/lists/*
 
-COPY Gemfile Gemfile.lock ${WORK_DIR}/
+COPY Gemfile ${WORK_DIR}/
 RUN bundle install
-COPY package.json yarn.lock ${WORK_DIR}/
+COPY package.json ${WORK_DIR}/
 RUN yarn install --check-files
 
 FROM base as builder
