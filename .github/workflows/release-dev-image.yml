@@ -83,7 +83,17 @@ jobs:
       - name: Push Docker image to GitHub Container Registry
         uses: docker/build-push-action@v5
         with:
+          context: .
+          file: ./Dockerfile
+          target: development
           platforms: ${{ matrix.platform }}
           push: true
           load: true
           tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
+          build-args: |
+            APP_VER=${{ steps.define-image-tag.outputs.tag_name }}
+            RAILS_ENV=development
+            NODE_ENV=development
