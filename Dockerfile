@@ -18,5 +18,6 @@ COPY Gemfile.lock /app/Gemfile.lock
 COPY package.json /app/package.json
 COPY yarn.lock /app/yarn.lock
 RUN yarn install && bundle install
+RUN echo
 
 CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]
