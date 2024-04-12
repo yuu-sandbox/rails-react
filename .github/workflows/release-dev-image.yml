@@ -64,6 +64,7 @@ jobs:
           target: development
           platforms: ${{ matrix.platform }}
           push: false
+          load: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=local,src=/tmp/.buildx-cache
