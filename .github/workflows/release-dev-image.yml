@@ -2,12 +2,16 @@
 name: Release Development Image to Github Registry
 
 on:
+  push:
+    branches:
+      - master
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
       - master
     paths:
       - Dockerfile
+      - .github/workflows/release-dev-image.yml
 
 env:
   REGISTRY: ghcr.io
@@ -24,9 +28,6 @@ jobs:
           - linux/amd64
           - linux/arm64
     timeout-minutes: 300
-    permissions:
-      packages: write
-      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -54,6 +55,7 @@ jobs:
           context: .
           file: ./Dockerfile
           target: development
+          platforms: ${{ matrix.platform }}
           push: false
           load: true
           tags: ${{ steps.meta.outputs.tags }}
@@ -69,6 +71,17 @@ jobs:
     if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
     needs: build-and-security-check
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
+    timeout-minutes: 300
+    permissions:
+      packages: write
+      contents: read
+
     steps:
       - uses: actions/checkout@v4
 
@@ -85,6 +98,7 @@ jobs:
           context: .
           file: ./Dockerfile
           target: development
+          platforms: ${{ matrix.platform }}
           push: false
           tags: ${{ needs.build-and-security-check.outputs.tag_name }}
           labels: ${{ needs.build-and-security-check.outputs.labels }}
