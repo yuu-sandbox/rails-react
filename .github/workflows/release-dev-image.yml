@@ -2,12 +2,16 @@
 name: Release Development Image to Github Registry
 
 on:
+  push:
+    branches:
+      - master
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
       - master
     paths:
       - Dockerfile
+      - .github/workflows/release-dev-image.yml
 
 env:
   REGISTRY: ghcr.io
