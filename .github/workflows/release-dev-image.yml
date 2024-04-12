@@ -72,11 +72,6 @@ jobs:
           image-ref: ${{ steps.meta.outputs.tags }}
           format: table
 
-      - name: Push Docker image to Github Container Registry
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.tags }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
+      - name: Push Docker image to GitHub Container Registry
+        run: |
+          docker push ${{ steps.meta.outputs.tags }}
